@@ -31,8 +31,8 @@ class firefoxdriver(object):
 
     def get_data(self, key_word):
         self.__login()
-        search = self.__wait_by_class("search-middle")
-        search = search.find_element_by_tag_name("input")
+        search = self.__wait_by_class(
+            "search-middle").find_element_by_tag_name("input")
         search.send_keys(key_word)
         search.send_keys(Keys.ENTER)
         items = self.__wait_by_class_batch("LM_list")
@@ -44,10 +44,13 @@ class firefoxdriver(object):
         return data
 
     def __get_judge(self):
+        if self.__is_in_judge():
+            return
         self.__driver.execute_script(
             'window.open("https://wenshu.court.gov.cn/")')
         window_list = self.__driver.window_handles
-        self.__driver.switch_to.window(window_list[1])
+        self.__driver.switch_to.window(window_list[-1])
+        time.sleep(0.5)
 
     def __is_in_judge(self):
         return INDEX_URL in self.__driver.current_url
@@ -59,10 +62,7 @@ class firefoxdriver(object):
         return not login[0].text == "登录"
 
     def __login(self):
-        self.__driver.refresh()
-        if not self.__is_in_judge():
-            self.__get_judge()
-        time.sleep(1)
+        self.__get_judge()
         if self.__is_logined():
             return
         login_url = INDEX_URL + self.__wait_by_id("loginLi").find_element_by_tag_name(
@@ -71,15 +71,11 @@ class firefoxdriver(object):
 
         frame = self.__wait_by_id("contentIframe")
         self.__driver.switch_to.frame(frame)
-        phone = self.__wait_by_class("phone-number-input")
-        phone.send_keys(self.__account)
-        pwd = self.__wait_by_class("password")
-        pwd.send_keys(self.__pwd)
-        login = self.__wait_by_class("login-button-container")
-        login.click()
+        self.__wait_by_class("phone-number-input").send_keys(self.__account)
+        self.__wait_by_class("password").send_keys(self.__pwd)
+        self.__wait_by_class("login-button-container").click()
         time.sleep(1)
         self.__driver.switch_to.default_content()
-        time.sleep(1.5)
 
     def __wait_by_class(self, class_name):
         return self.__wait.until(EC.presence_of_element_located((By.CLASS_NAME, class_name)))
