@@ -20,7 +20,6 @@ class firefoxdriver(object):
         options = webdriver.FirefoxOptions()
         options.add_argument("--headless")
         options.add_argument("--disable-gpu")
-
         self.__driver = webdriver.Firefox(options=options)
         self.__wait = WebDriverWait(self.__driver, 20)
         account, pwd = get_account_info()
@@ -35,11 +34,15 @@ class firefoxdriver(object):
             "search-middle").find_element_by_tag_name("input")
         search.send_keys(key_word)
         search.send_keys(Keys.ENTER)
-        items = self.__wait_by_class_batch("LM_list")
         data = []
-        for i in items:
-            result = parse(i)
-            data.append(result)
+        count = self.__wait_by_css(
+            ".listTMain .LM_right .LM_con .con_right span")
+        print(count.text)
+        if count.text != "0":
+            items = self.__wait_by_class_batch("LM_list")
+            for i in items:
+                result = parse(i)
+                data.append(result)
         self.__driver.get(INDEX_URL)  # 返回首页，重置搜索条件
         return data
 
@@ -76,6 +79,9 @@ class firefoxdriver(object):
         self.__wait_by_class("login-button-container").click()
         time.sleep(1)
         self.__driver.switch_to.default_content()
+
+    def __wait_by_css(self, selector):
+        return self.__wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, selector)))
 
     def __wait_by_class(self, class_name):
         return self.__wait.until(EC.presence_of_element_located((By.CLASS_NAME, class_name)))
