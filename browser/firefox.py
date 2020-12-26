@@ -31,10 +31,9 @@ class firefoxdriver(object):
 
     def get_data(self, key_word):
         self.__login()
-        search = self.__wait_by_class(
-            "search-middle").find_element_by_tag_name("input")
-        search.send_keys(key_word)
-        search.send_keys(Keys.ENTER)
+        self.__wait_by_class("advenced-search").click()
+        self.__wait_by_id("s17").send_keys(key_word)
+        self.__wait_by_id("searchBtn").click()
         items = self.__wait_by_class_batch("LM_list")
         data = []
         for i in items:
