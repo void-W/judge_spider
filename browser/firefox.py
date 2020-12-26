@@ -20,7 +20,9 @@ class firefoxdriver(object):
         options = webdriver.FirefoxOptions()
         options.add_argument("--headless")
         options.add_argument("--disable-gpu")
-        self.__driver = webdriver.Firefox(options=options)
+        capabilities = {'browserName': 'firefox'}
+        self.__driver = webdriver.Remote(desired_capabilities=capabilities,
+                                         options=options)
         self.__wait = WebDriverWait(self.__driver, 20)
         account, pwd = get_account_info()
         self.__account = account
