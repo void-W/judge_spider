@@ -5,6 +5,8 @@ from selenium.webdriver.common.keys import Keys
 from selenium import webdriver
 import time
 
+import os
+
 
 INDEX_URL = "https://wenshu.court.gov.cn/"
 PHONE_NUM = "17621626837"
@@ -21,7 +23,9 @@ class firefoxdriver(object):
         options.add_argument("--headless")
         options.add_argument("--disable-gpu")
         capabilities = {'browserName': 'firefox'}
-        self.__driver = webdriver.Remote(desired_capabilities=capabilities,
+        remote_host = os.environ.get('REMOTE_HOST', '127.0.0.1')
+        self.__driver = webdriver.Remote(command_executor='http://'+remote_host+':4444/wd/hub',
+                                         desired_capabilities=capabilities,
                                          options=options)
         self.__wait = WebDriverWait(self.__driver, 20)
         account, pwd = get_account_info()
