@@ -14,3 +14,7 @@ def judge_doc():
         "Content-Type": "application/json;charset=utf-8"
     }
     return jsonify({"result": data}), 200, header
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port="5000")
